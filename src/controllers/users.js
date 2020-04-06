@@ -1,8 +1,6 @@
+import User from '../models/users';
+
 export default new class UserCtrl {
-	
-	constructor() {
-		this.db = [];
-	}
 	
 	/**
 	 * 获取所有用户
@@ -10,7 +8,8 @@ export default new class UserCtrl {
 	 * @returns {Promise<void>}
 	 */
 	async getAllUsers(ctx) {
-		ctx.body = this.db;
+		const users = await User.find();
+		ctx.body = users;
 	}
 	
 	/**
@@ -19,10 +18,10 @@ export default new class UserCtrl {
 	 * @returns {Promise<void>}
 	 */
 	async getUserById(ctx) {
-		const user = this.db.find(user => user.id === +ctx.params.id) || {
-			name: 'user does not exist',
-			id: null
-		};
+		const user = await User.findById(ctx.params.id);
+		if (!user) {
+			ctx.throw(412, '无该用户');
+		}
 		ctx.body = user;
 	}
 	
@@ -35,12 +34,10 @@ export default new class UserCtrl {
 		ctx.verifyParams({
 			name: 'string'
 		});
-		const addUser = {
-			name: ctx.request.body.name,
-			id: this.db.length
-		};
-		this.db.push(addUser);
-		ctx.body = `add successfully ${JSON.stringify(addUser)}`;
+		const user = await new User({
+			name: ctx.request.body.name
+		}).save();
+		ctx.body = `add successfully ${JSON.stringify(user)}`;
 	}
 	
 	/**
@@ -49,8 +46,25 @@ export default new class UserCtrl {
 	 * @returns {Promise<void>}
 	 */
 	async updateUserById(ctx) {
-		const updateUser = this.db.find(user => user.id === +ctx.request.body.id);
-		updateUser.name = ctx.request.body.name;
-		ctx.body = `update successfully ${JSON.stringify(updateUser)}`;
+		const user = await User.findByIdAndUpdate(ctx.params.id, {
+			name: ctx.request.body.name
+		});
+		if (!user) {
+			ctx.throw(412, '无该用户');
+		}
+		ctx.body = `update successfully ${JSON.stringify(user)}`;
+	}
+	
+	/**
+	 * 通过id删除指定用户
+	 * @param ctx
+	 * @returns {Promise<void>}
+	 */
+	async deleteUserById(ctx) {
+		const user = await User.findByIdAndRemove(ctx.params.id);
+		if (!user) {
+			ctx.throw(412, '无该用户');
+		}
+		ctx.status = 204;
 	}
 };

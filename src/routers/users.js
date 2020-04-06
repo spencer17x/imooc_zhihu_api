@@ -9,7 +9,9 @@ usersRouter.get('/', UsersCtrl.getAllUsers.bind(UsersCtrl));
 
 usersRouter.post('/', UsersCtrl.addUser.bind(UsersCtrl));
 
-usersRouter.patch('/', UsersCtrl.updateUserById.bind(UsersCtrl));
+usersRouter.patch('/:id', UsersCtrl.updateUserById.bind(UsersCtrl));
+
+usersRouter.delete('/:id', UsersCtrl.deleteUserById.bind(UsersCtrl));
 
 usersRouter.get('/:id', UsersCtrl.getUserById.bind(UsersCtrl));
 

@@ -3,6 +3,8 @@ import koaBody from 'koa-body';
 import routing from './routers';
 import error from 'koa-json-error';
 import parameter from 'koa-parameter';
+import mongoose from 'mongoose';
+import { connectionStr } from './config';
 
 /**
  * 自定义错误捕获
@@ -21,6 +23,15 @@ const ErrorCapture = async (ctx, next) => {
 		};
 	}
 };
+
+mongoose.connect(
+	connectionStr,
+	{
+		useNewUrlParser: true,
+		useUnifiedTopology: true
+	},
+	() => console.log('MongoDB 连接成功')
+);
 
 console.log('env: ', process.env.NODE_ENV);
 
