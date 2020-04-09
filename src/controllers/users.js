@@ -1,6 +1,32 @@
+import jwt from 'jsonwebtoken';
 import User from '../models/users';
+import { jwtSecret } from '../config';
 
 export default new class UserCtrl {
+	
+	/**
+	 * 登录
+	 * @param ctx
+	 * @retur ns {Promise<void>}
+	 */
+	async login(ctx) {
+		ctx.verifyParams({
+			name: { type: 'string', required: true },
+			password: { type: 'string', required: true }
+		});
+		const user = await User.findOne(ctx.request.body);
+		if (!user) {
+			ctx.throw(412, '用户名或密码错误');
+		}
+		const { name, _id } = user;
+		const token = jwt.sign({
+			name,
+			_id
+		}, jwtSecret, {
+			expiresIn: '1d'
+		});
+		ctx.body = { token };
+	}
 	
 	/**
 	 * 获取所有用户
@@ -32,11 +58,14 @@ export default new class UserCtrl {
 	 */
 	async addUser(ctx) {
 		ctx.verifyParams({
-			name: 'string'
+			name: { type: 'string', required: true },
+			password: { type: 'string', required: true },
 		});
-		const user = await new User({
+		const repeatedUser = await User.findOne({
 			name: ctx.request.body.name
-		}).save();
+		});
+		if (repeatedUser) ctx.throw(409, '用户名已存在');
+		const user = await new User(ctx.request.body).save();
 		ctx.body = `add successfully ${JSON.stringify(user)}`;
 	}
 	
@@ -46,12 +75,11 @@ export default new class UserCtrl {
 	 * @returns {Promise<void>}
 	 */
 	async updateUserById(ctx) {
-		const user = await User.findByIdAndUpdate(ctx.params.id, {
-			name: ctx.request.body.name
+		ctx.verifyParams({
+			name: { type: 'string', required: false },
+			password: { type: 'string', required: false },
 		});
-		if (!user) {
-			ctx.throw(412, '无该用户');
-		}
+		const user = await User.findByIdAndUpdate(ctx.params.id, ctx.request.body);
 		ctx.body = `update successfully ${JSON.stringify(user)}`;
 	}
 	
@@ -66,5 +94,18 @@ export default new class UserCtrl {
 			ctx.throw(412, '无该用户');
 		}
 		ctx.status = 204;
+	}
+	
+	/**
+	 * 检查是否有权限
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise<void>}
+	 */
+	async checkOwner(ctx, next) {
+		if (ctx.params.id === ctx.state.user._id) {
+			ctx.throw(403, '没有权限');
+		}
+		await next();
 	}
 };
