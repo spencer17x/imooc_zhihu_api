@@ -26,6 +26,14 @@ const auth = koaJwt({ secret: jwtSecret });
 
 usersRouter.get('/', UsersCtrl.getAllUsers.bind(UsersCtrl));
 
+usersRouter.get('/:id/following', UsersCtrl.listFollowing.bind(UsersCtrl));
+
+usersRouter.put('/:id/follow', auth, UsersCtrl.checkUserExist.bind(UsersCtrl), UsersCtrl.follow.bind(UsersCtrl));
+
+usersRouter.delete('/:id/unfollow', auth, UsersCtrl.checkUserExist.bind(UsersCtrl), UsersCtrl.unfollow.bind(UsersCtrl));
+
+usersRouter.get('/:id/followers', auth, UsersCtrl.getUserFollowers.bind(UsersCtrl));
+
 usersRouter.post('/', auth, UsersCtrl.addUser.bind(UsersCtrl));
 
 usersRouter.post('/login', UsersCtrl.login.bind(UsersCtrl));

@@ -1,9 +1,11 @@
 import Koa from 'koa';
 import koaBody from 'koa-body';
-import routing from './routers';
 import error from 'koa-json-error';
 import parameter from 'koa-parameter';
 import mongoose from 'mongoose';
+import koaStatic from 'koa-static';
+import path from 'path';
+import routing from './routers';
 import { connectionStr } from './config';
 
 /**
@@ -37,7 +39,13 @@ console.log('env: ', process.env.NODE_ENV);
 
 const app = new Koa();
 
-app.use(koaBody()).use(error({
+app.use(koaStatic(path.join(__dirname, '/public'))).use(koaBody({
+	multipart: true,
+	formidable: {
+		uploadDir: path.join(__dirname, '/public/uploads'),
+		keepExtensions: true
+	}
+})).use(error({
 	postFormat: (e, { stack, ...rest }) => process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }
 }));
 
