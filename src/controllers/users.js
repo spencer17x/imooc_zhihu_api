@@ -51,8 +51,13 @@ export default new class UserCtrl {
 	 */
 	async getUserById(ctx) {
 		const { fields = '' } = ctx.query;
-		const selectFields = fields.split(';').map(v => `+${v}`).join(' ');
-		const user = await User.findById(ctx.params.id).select(selectFields);
+		const selectFields = fields.split(';').filter(Boolean).map(v => `+${v}`).join(' ');
+		const popluateFields = fields.split(';').filter(Boolean).map(v => {
+			if (v === 'educations') return 'educations.school';
+			if (v === 'employments') return 'employments.company employments.job';
+			return v;
+		}).join(' ');
+		const user = await User.findById(ctx.params.id).select(selectFields).populate(popluateFields);
 		if (!user) {
 			ctx.throw(412, '无该用户');
 		}
@@ -118,7 +123,7 @@ export default new class UserCtrl {
 	 * @returns {Promise<void>}
 	 */
 	async checkOwner(ctx, next) {
-		if (ctx.params.id === ctx.state.user._id) {
+		if (ctx.params.id !== ctx.state.user._id) {
 			ctx.throw(403, '没有权限');
 		}
 		await next();
