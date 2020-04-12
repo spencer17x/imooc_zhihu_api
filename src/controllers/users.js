@@ -39,7 +39,7 @@ export default new class UserCtrl {
 		per_page = Math.max(per_page * 1, 1);
 		page = Math.max(page * 1, 1) - 1;
 		const users = await User.find({
-			name: new RegExp(ctx.query.q)
+			name: new RegExp(ctx.query.q, 'i')
 		}).limit(per_page).skip(page * per_page);
 		ctx.body = users;
 	}
