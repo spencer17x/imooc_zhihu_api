@@ -34,7 +34,11 @@ export default new class UserCtrl {
 	 * @returns {Promise<void>}
 	 */
 	async getAllUsers(ctx) {
-		const users = await User.find();
+		// 分页功能
+		let { per_page = 2, page = 1 } = ctx.query;
+		per_page = Math.max(per_page * 1, 1);
+		page = Math.max(page * 1, 1) - 1;
+		const users = await User.find().limit(per_page).skip(page * per_page);
 		ctx.body = users;
 	}
 	
