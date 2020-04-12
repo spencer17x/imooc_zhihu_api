@@ -22,7 +22,7 @@ const usersRouter = new KoaRouter({
 //	await next();
 //};
 
-const auth = koaJwt({ secret: jwtSecret });
+export const auth = koaJwt({ secret: jwtSecret });
 
 usersRouter.get('/', UsersCtrl.getAllUsers.bind(UsersCtrl));
 
