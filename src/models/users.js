@@ -28,7 +28,8 @@ const userSchema = new Schema({
 		select: false
 	},
 	introduction: { type: String, select: false },
-	following: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], select: false }
+	following: { type: [{ type: Schema.Types.ObjectId, ref: 'User' }], select: false },
+	followingTopics: { type: [{ type: Schema.Types.ObjectId, ref: 'Topics' }], select: false }
 });
 
 export default model('User', userSchema);

@@ -32,6 +32,10 @@ usersRouter.put('/:id/follow', auth, UsersCtrl.checkUserExist.bind(UsersCtrl), U
 
 usersRouter.delete('/:id/unfollow', auth, UsersCtrl.checkUserExist.bind(UsersCtrl), UsersCtrl.unfollow.bind(UsersCtrl));
 
+usersRouter.put('/:id/followingTopic', auth, UsersCtrl.checkTopicExist.bind(UsersCtrl), UsersCtrl.followingTopic.bind(UsersCtrl));
+
+usersRouter.delete('/:id/unfollowingTopic', auth, UsersCtrl.checkTopicExist.bind(UsersCtrl), UsersCtrl.unfollowingTopic.bind(UsersCtrl));
+
 usersRouter.get('/:id/followers', auth, UsersCtrl.getUserFollowers.bind(UsersCtrl));
 
 usersRouter.post('/', auth, UsersCtrl.addUser.bind(UsersCtrl));

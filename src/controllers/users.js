@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/users';
+import Topic from '../models/topics';
 import { jwtSecret } from '../config';
 
 export default new class UserCtrl {
@@ -194,5 +195,48 @@ export default new class UserCtrl {
 			following: ctx.params.id
 		});
 		ctx.body = { followers };
+	}
+	
+	/**
+	 * 关注话题
+	 * @param ctx
+	 * @returns {Promise<void>}
+	 */
+	async followingTopic(ctx) {
+		const me = await User.findById(ctx.state.user._id).select('+followingTopics');
+		if (!me.followingTopics.map(id => id.toString()).includes(ctx.params.id)) {
+			me.followingTopics.push(ctx.params.id);
+			me.save();
+		}
+		ctx.status = 204;
+	}
+	
+	/**
+	 * 取消关注话题
+	 * @param ctx
+	 * @returns {Promise<void>}
+	 */
+	async unfollowingTopic(ctx) {
+		const me = await User.findById(ctx.state.user._id).select('+followingTopics');
+		const index = me.followingTopics.map(id => id.toString()).indexOf(ctx.params.id);
+		if (index > -1) {
+			me.followingTopics.splice(index, 1);
+			me.save();
+		}
+		ctx.status = 204;
+	}
+	
+	/**
+	 * 检查话题是否存在
+	 * @param ctx
+	 * @param next
+	 * @returns {Promise<void>}
+	 */
+	async checkTopicExist(ctx, next) {
+		const topic = await Topic.findById(ctx.params.id);
+		if (!topic) {
+			ctx.throw(412, '用户不存在');
+		}
+		await next();
 	}
 };

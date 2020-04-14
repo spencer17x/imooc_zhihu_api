@@ -1,4 +1,5 @@
 import Topics from '../models/topics';
+import User from '../models/users';
 
 export default new class TopicsCtrl {
 	/**
@@ -56,5 +57,19 @@ export default new class TopicsCtrl {
 		});
 		const topic = await Topics.findByIdAndUpdate(ctx.params.id, ctx.request.body);
 		ctx.body = topic;
+	}
+	
+	/**
+	 * 获取话题的粉丝
+	 * @param ctx
+	 * @returns {Promise<void>}
+	 */
+	async getTopicFollower(ctx) {
+		const users = await User.find({
+			followingTopics: ctx.params.id
+		});
+		ctx.body = {
+			topicUsers: users
+		};
 	}
 };

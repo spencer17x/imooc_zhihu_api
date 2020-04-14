@@ -10,6 +10,8 @@ topicsRouter.get('/', TopicsCtrl.getAllTopics.bind(TopicsCtrl));
 
 topicsRouter.get('/:id', TopicsCtrl.findById.bind(TopicsCtrl));
 
+topicsRouter.get('/:id/followers', TopicsCtrl.getTopicFollower.bind(TopicsCtrl));
+
 topicsRouter.post('/', auth, TopicsCtrl.create.bind(TopicsCtrl));
 
 topicsRouter.patch('/:id', auth, TopicsCtrl.update.bind(TopicsCtrl));
