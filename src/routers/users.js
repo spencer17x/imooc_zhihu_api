@@ -28,13 +28,13 @@ usersRouter.get('/', UsersCtrl.getAllUsers.bind(UsersCtrl));
 
 usersRouter.get('/:id/following', UsersCtrl.listFollowing.bind(UsersCtrl));
 
-usersRouter.put('/:id/follow', auth, UsersCtrl.checkUserExist.bind(UsersCtrl), UsersCtrl.follow.bind(UsersCtrl));
+usersRouter.put('/follow/:id', auth, UsersCtrl.checkUserExist.bind(UsersCtrl), UsersCtrl.follow.bind(UsersCtrl));
 
-usersRouter.delete('/:id/unfollow', auth, UsersCtrl.checkUserExist.bind(UsersCtrl), UsersCtrl.unfollow.bind(UsersCtrl));
+usersRouter.delete('/unfollow/:id', auth, UsersCtrl.checkUserExist.bind(UsersCtrl), UsersCtrl.unfollow.bind(UsersCtrl));
 
-usersRouter.put('/:id/followingTopic', auth, UsersCtrl.checkTopicExist.bind(UsersCtrl), UsersCtrl.followingTopic.bind(UsersCtrl));
+usersRouter.put('/followingTopic/:id', auth, UsersCtrl.checkTopicExist.bind(UsersCtrl), UsersCtrl.followingTopic.bind(UsersCtrl));
 
-usersRouter.delete('/:id/unfollowingTopic', auth, UsersCtrl.checkTopicExist.bind(UsersCtrl), UsersCtrl.unfollowingTopic.bind(UsersCtrl));
+usersRouter.delete('/unfollowingTopic/:id', auth, UsersCtrl.checkTopicExist.bind(UsersCtrl), UsersCtrl.unfollowingTopic.bind(UsersCtrl));
 
 usersRouter.get('/:id/followers', auth, UsersCtrl.getUserFollowers.bind(UsersCtrl));
 
